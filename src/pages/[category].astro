@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import PostCard from '../components/PostCard.astro';
+import { CATEGORIES, SITE_TITLE } from '../consts';
+
+export function getStaticPaths() {
+	return CATEGORIES.map((c) => ({
+		params: { category: c.slug },
+		props: { label: c.label },
+	}));
+}
+
+const { category } = Astro.params;
+const { label } = Astro.props;
+
+const posts = (await getCollection('blog'))
+	.filter((p) => p.data.category === category)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`${label} — ${SITE_TITLE}`} description={`${label}分类下的所有文章`} />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1 class="page-title">{label}</h1>
+			<p class="page-sub">// 共 {posts.length} 篇</p>
+			{
+				posts.length > 0 ? (
+					<ul class="blog-list">
+						{posts.map((post) => <PostCard post={post} />)}
+					</ul>
+				) : (
+					<p class="empty">&gt; 暂无文章</p>
+				)
+			}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.page-title {
+		font-size: 1.5em;
+		margin-bottom: 0.1em;
+	}
+	.page-sub {
+		font-family: var(--mono);
+		font-size: 0.78em;
+		color: rgb(var(--gray));
+		margin: 0 0 1.5em 0;
+	}
+	.empty {
+		font-family: var(--mono);
+		font-size: 0.85em;
+		color: rgb(var(--gray));
+		padding: 1em 0;
+	}
+</style>

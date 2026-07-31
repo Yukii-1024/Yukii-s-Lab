@@ -1,0 +1,110 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { AUTHOR_NAME } from '../consts';
+import { getReadingTime } from '../utils/readingTime';
+
+type Props = CollectionEntry<'blog'>['data'];
+const { title, description, pubDate, updatedDate, heroImage, tags } = Astro.props;
+
+// reading time is computed from the rendered slot content, not available here
+// we pass it through via a slot workaround
+---
+
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={title} description={description} />
+		<style>
+			main {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: 0 auto;
+				padding: 2em 1em 4em 1em;
+			}
+			.article-header {
+				text-align: center;
+				padding: 1.5em 0;
+			}
+			.article-header h1 {
+				font-size: 1.8em;
+				margin-bottom: 0.4em;
+			}
+			.article-meta {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 0.8em;
+				align-items: center;
+				font-size: 0.85em;
+				color: rgb(var(--gray));
+				margin-bottom: 0.6em;
+			}
+			.article-meta-item {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.3em;
+			}
+			.article-meta-item svg {
+				width: 14px;
+				height: 14px;
+				opacity: 0.7;
+				flex-shrink: 0;
+			}
+			.prose {
+				line-height: 1.85;
+				font-size: 1.02em;
+			}
+			.tag-list {
+				display: inline-flex;
+				flex-wrap: wrap;
+				gap: 0.35em;
+			}
+			.tag {
+				display: inline-block;
+				padding: 0.1em 0.6em;
+				font-size: 0.82em;
+				background: rgba(var(--gray-light), 0.6);
+				border-radius: 4px;
+				color: rgb(var(--gray));
+				text-decoration: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				<div class="article-header">
+					<h1>{title}</h1>
+					<div class="article-meta">
+						<span class="article-meta-item">
+							<svg viewBox="0 0 1024 1024" fill="currentColor"><path d="M649.6 633.6c86.4-48 147.2-144 147.2-249.6 0-160-128-288-288-288s-288 128-288 288c0 108.8 57.6 201.6 147.2 249.6-121.6 48-214.4 153.6-240 288-3.2 9.6 0 19.2 6.4 25.6 3.2 9.6 12.8 12.8 22.4 12.8h704c9.6 0 19.2-3.2 25.6-12.8 6.4-6.4 9.6-16 6.4-25.6-25.6-134.4-121.6-240-243.2-288z"/></svg>
+							{AUTHOR_NAME}
+						</span>
+						<span class="article-meta-item">
+							<svg viewBox="0 0 1024 1024" fill="currentColor"><path d="M716.4 110.137c0-18.753-14.72-33.473-33.472-33.473-18.753 0-33.473 14.72-33.473 33.473v33.473h66.993v-33.473zm-334.87 0c0-18.753-14.72-33.473-33.473-33.473s-33.52 14.72-33.52 33.473v33.473h66.993v-33.473zm468.81 33.52H716.4v100.465c0 18.753-14.72 33.473-33.472 33.473a33.145 33.145 0 01-33.473-33.473V143.657H381.53v100.465c0 18.753-14.72 33.473-33.473 33.473a33.145 33.145 0 01-33.473-33.473V143.657H180.6A134.314 134.314 0 0046.66 277.595v535.756A134.314 134.314 0 00180.6 947.289h669.74a134.36 134.36 0 00133.94-133.938V277.595a134.314 134.314 0 00-133.94-133.938zm33.473 267.877H147.126a33.145 33.145 0 01-33.473-33.473c0-18.752 14.72-33.473 33.473-33.473h736.687c18.752 0 33.472 14.72 33.472 33.473a33.145 33.145 0 01-33.472 33.473z"/></svg>
+							{pubDate.getFullYear()}/{pubDate.getMonth() + 1}/{pubDate.getDate()}
+						</span>
+						{
+							tags.length > 0 && (
+								<span class="tag-list">
+									{tags.map((tag) => (
+										<span class="tag">{tag}</span>
+									))}
+								</span>
+							)
+						}
+					</div>
+					<hr />
+				</div>
+				<div class="prose">
+					<slot />
+				</div>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>

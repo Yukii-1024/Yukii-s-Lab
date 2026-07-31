@@ -1,0 +1,125 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import profileImg from '../assets/profile.jpg';
+import { AUTHOR_BIO, AUTHOR_NAME } from '../consts';
+import { getReadingTime } from '../utils/readingTime';
+
+const posts = await getCollection('blog');
+const tagCount = new Set(posts.flatMap((p) => p.data.tags)).size;
+const totalMinutes = posts.reduce((sum, p) => sum + getReadingTime(p.body || ''), 0);
+const pad = (n: number) => String(n).padStart(3, '0');
+---
+
+<aside class="profile" aria-label="作者信息">
+	<Image class="p-avatar" src={profileImg} alt={AUTHOR_NAME} width={128} height={128} />
+	<p class="p-name">{AUTHOR_NAME}</p>
+	<p class="p-handle">yukii@blog:~$</p>
+	<p class="p-bio">{AUTHOR_BIO}。</p>
+	<div class="p-rows">
+		<div class="p-row">
+			<span class="p-key">ROLE</span>
+			<span class="p-val">开发者</span>
+		</div>
+		<div class="p-row">
+			<span class="p-key">POSTS</span>
+			<span class="p-val">{pad(posts.length)}</span>
+		</div>
+		<div class="p-row">
+			<span class="p-key">TAGS</span>
+			<span class="p-val">{pad(tagCount)}</span>
+		</div>
+		<div class="p-row">
+			<span class="p-key">MIN READ</span>
+			<span class="p-val">{pad(totalMinutes)}</span>
+		</div>
+		<div class="p-row">
+			<span class="p-key">STATUS</span>
+			<span class="p-val p-status">ACTIVE</span>
+		</div>
+	</div>
+</aside>
+
+<style>
+	.profile {
+		position: fixed;
+		left: 2em;
+		top: 38%;
+		transform: translateY(-50%);
+		width: 240px;
+		padding: 1.5em 1.4em;
+		background: #ffffff;
+		border: 1px solid var(--border);
+		box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.05);
+		z-index: 5;
+		display: none;
+	}
+	/* 只在宽屏显示：保证不与 720px 正文区重叠 */
+	@media (min-width: 1280px) {
+		.profile {
+			display: block;
+		}
+	}
+
+	.p-avatar {
+		display: block;
+		width: 64px;
+		height: 64px;
+		object-fit: cover;
+		border: 1px solid #1a1a1a;
+		border-radius: 50%;
+		box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.08);
+		margin: 0 auto 0.9em;
+	}
+	.p-name {
+		margin: 0;
+		font-size: 1.05em;
+		font-weight: 700;
+		color: #000000;
+		text-align: center;
+	}
+	.p-handle {
+		margin: 0.1em 0 0.9em 0;
+		font-family: var(--mono);
+		font-size: 0.72em;
+		color: rgb(var(--gray));
+		text-align: center;
+	}
+	.p-bio {
+		margin: 0 0 1em 0;
+		font-size: 0.85em;
+		line-height: 1.7;
+		color: rgb(var(--gray));
+	}
+
+	.p-rows {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45em;
+		border-top: 1px solid var(--border);
+		padding: 0.9em 0;
+		font-family: var(--mono);
+		font-size: 0.75em;
+	}
+	.p-row {
+		display: flex;
+		justify-content: space-between;
+	}
+	.p-key {
+		color: rgb(var(--gray));
+		letter-spacing: 0.1em;
+	}
+	.p-val {
+		color: rgb(var(--text));
+	}
+	.p-status::before {
+		content: '●';
+		margin-right: 0.5em;
+		font-size: 0.7em;
+		animation: p-blink 1.6s steps(1) infinite;
+	}
+	@keyframes p-blink {
+		50% { opacity: 0; }
+	}
+
+</style>

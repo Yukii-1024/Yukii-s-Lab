@@ -1,0 +1,253 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import Profile from '../components/Profile.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getReadingTime } from '../utils/readingTime';
+
+const recent = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 4);
+
+const pad = (n: number) => String(n).padStart(2, '0');
+const isoDate = (d: Date) =>
+	`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+		<Profile />
+		<main class="home">
+			<section class="hero">
+				<span class="cross tl" aria-hidden="true">+</span>
+				<span class="cross tr" aria-hidden="true">+</span>
+				<span class="cross bl" aria-hidden="true">+</span>
+				<span class="cross br" aria-hidden="true">+</span>
+
+				<p class="kicker">// HELLO, WORLD</p>
+				<h1 class="title">{SITE_TITLE}</h1>
+				<p class="tagline">
+					 「{SITE_DESCRIPTION}」<span class="cursor" aria-hidden="true"></span>
+				</p>
+			</section>
+
+			{
+				recent.length > 0 && (
+					<section class="recent">
+						<div class="section-head">
+							<h2><span class="idx">//</span> LATEST</h2>
+							<span class="deco">$ tail -n {recent.length}</span>
+						</div>
+						<ul class="post-list">
+							{recent.map((post, i) => (
+								<li>
+									<a class="post-row" href={`/blog/${post.id}/`}>
+										<span class="row-idx">{pad(i + 1)}</span>
+										<span class="row-date">{isoDate(post.data.pubDate)}</span>
+										<span class="row-title">{post.data.title}</span>
+										<span class="row-fill" aria-hidden="true"></span>
+										<span class="row-meta">≈{getReadingTime(post.body || '')} min</span>
+										<span class="row-arrow" aria-hidden="true">-&gt;</span>
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				)
+			}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main.home {
+		width: 100%;
+		max-width: none;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	.hero {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		min-height: calc(100svh - 60px - 63px);
+		padding: 3em 1.5em;
+	}
+	/* faint blueprint grid */
+	.hero::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background-image:
+			linear-gradient(rgba(0, 0, 0, 0.028) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(0, 0, 0, 0.028) 1px, transparent 1px);
+		background-size: 44px 44px;
+		background-position: center;
+		pointer-events: none;
+	}
+	.hero > * {
+		position: relative;
+	}
+
+	.hero .cross {
+		position: absolute;
+		font-family: var(--mono);
+		font-size: 0.9em;
+		line-height: 1;
+		color: rgba(0, 0, 0, 0.25);
+		user-select: none;
+	}
+	.cross.tl { top: 1.5em; left: 2em; }
+	.cross.tr { top: 1.5em; right: 2em; }
+	.cross.bl { bottom: 1.5em; left: 2em; }
+	.cross.br { bottom: 1.5em; right: 2em; }
+
+	.kicker {
+		margin: 0 0 2.2em 0;
+		font-family: var(--mono);
+		font-size: 0.78em;
+		letter-spacing: 0.12em;
+		color: rgb(var(--gray));
+	}
+
+	.title {
+		margin: 0 0 0.35em 0;
+		font-size: clamp(2.2rem, 5vw, 3.2rem);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		color: #000000;
+	}
+
+	.tagline {
+		display: flex;
+		align-items: center;
+		gap: 0.45em;
+		margin: 0;
+		font-family: var(--mono);
+		font-size: 0.95em;
+		color: rgb(var(--gray));
+	}
+	.cursor {
+		display: inline-block;
+		width: 0.55em;
+		height: 1.05em;
+		background: #1a1a1a;
+		animation: blink 1.1s steps(1) infinite;
+	}
+	@keyframes blink {
+		50% { opacity: 0; }
+	}
+
+	/* ---------- RECENT POSTS ---------- */
+	.recent {
+		width: 720px;
+		max-width: calc(100% - 2em);
+		margin: 0 auto;
+		padding: 1em 0 4em;
+	}
+	.section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1em;
+		border-bottom: 1px solid var(--border);
+		padding-bottom: 0.7em;
+		font-family: var(--mono);
+	}
+	.section-head h2 {
+		margin: 0;
+		font-family: var(--mono);
+		font-size: 0.95em;
+		font-weight: 700;
+		letter-spacing: 0.18em;
+	}
+	.section-head .idx {
+		color: rgb(var(--gray));
+		font-weight: 400;
+	}
+	.section-head .deco {
+		font-size: 0.75em;
+		color: rgb(var(--gray));
+	}
+
+	.post-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-bottom: 1px solid var(--border);
+	}
+	.post-row {
+		display: flex;
+		align-items: baseline;
+		padding: 0.95em 0.6em;
+		font-family: var(--mono);
+		font-size: 0.85em;
+		color: rgb(var(--text));
+		text-decoration: none;
+		transition: background 0.12s, color 0.12s;
+	}
+	.post-row:hover {
+		background: #1a1a1a;
+		color: #fafafa;
+	}
+	.row-idx {
+		flex-shrink: 0;
+		width: 2.4em;
+		opacity: 0.45;
+	}
+	.row-date {
+		flex-shrink: 0;
+		margin-right: 1.6em;
+		opacity: 0.6;
+	}
+	.row-title {
+		font-weight: 700;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.row-fill {
+		flex: 1;
+		min-width: 1.5em;
+		margin: 0 0.9em;
+		border-bottom: 1px dashed rgba(0, 0, 0, 0.25);
+		transform: translateY(-0.3em);
+	}
+	.post-row:hover .row-fill {
+		border-bottom-color: rgba(255, 255, 255, 0.4);
+	}
+	.row-meta {
+		flex-shrink: 0;
+		opacity: 0.6;
+	}
+	.row-arrow {
+		flex-shrink: 0;
+		margin-left: 1.2em;
+		opacity: 0;
+		transform: translateX(-4px);
+		transition: opacity 0.12s, transform 0.12s;
+	}
+	.post-row:hover .row-arrow {
+		opacity: 1;
+		transform: translateX(0);
+	}
+
+	@media (max-width: 860px) {
+		.row-date {
+			display: none;
+		}
+	}
+
+</style>

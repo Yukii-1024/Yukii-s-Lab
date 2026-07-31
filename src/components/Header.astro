@@ -1,0 +1,82 @@
+---
+import { SITE_TITLE } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<header>
+	<nav>
+		<a href="/" class="site-title">{SITE_TITLE}</a>
+		<div class="nav-links">
+			<HeaderLink href="/notes">技术笔记</HeaderLink>
+			<HeaderLink href="/fixes">疑难处置</HeaderLink>
+			<HeaderLink href="/essays">随笔</HeaderLink>
+			<HeaderLink href="/about">关于</HeaderLink>
+		</div>
+	</nav>
+</header>
+
+<style>
+	header {
+		padding: 0 1.5em;
+		background: rgba(250, 250, 250, 0.88);
+		border-bottom: 1px solid var(--border);
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		backdrop-filter: blur(8px);
+	}
+	nav {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 60px;
+		font-family: var(--mono);
+	}
+	.site-title {
+		font-family: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+		font-size: 1.35em;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+		color: #000000;
+		text-decoration: none;
+	}
+	.site-title:hover {
+		color: #000000;
+		opacity: 0.55;
+	}
+	.nav-links {
+		display: flex;
+		gap: 0.3em;
+	}
+	.nav-links a {
+		padding: 0.4em 0.8em;
+		font-size: 0.85em;
+		color: rgb(var(--gray));
+		text-decoration: none;
+		border: 1px solid transparent;
+		transition: background 0.15s, color 0.15s;
+	}
+	.nav-links a:hover {
+		background: var(--accent);
+		color: #fafafa;
+	}
+	.nav-links a.active {
+		color: rgb(var(--text));
+		border-color: var(--border);
+		font-weight: 400;
+		text-decoration: none;
+	}
+	.nav-links a.active:hover {
+		background: var(--accent);
+		color: #fafafa;
+	}
+	@media (max-width: 720px) {
+		.site-title {
+			font-size: 1.12em;
+		}
+		.nav-links a {
+			padding: 0.4em 0.5em;
+			font-size: 0.8em;
+		}
+	}
+</style>

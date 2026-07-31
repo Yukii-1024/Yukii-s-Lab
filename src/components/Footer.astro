@@ -1,0 +1,46 @@
+---
+import { SITE_TITLE } from '../consts';
+const today = new Date();
+---
+
+<footer>
+	<div class="footer-inner">
+		<span class="eof">[EOF]</span>
+		<span>&copy; {today.getFullYear()} {SITE_TITLE}</span>
+		<span class="dot">·</span>
+		<span>Powered by <a href="https://astro.build" target="_blank">Astro</a></span>
+	</div>
+</footer>
+
+<style>
+	footer {
+		padding: 2em 1em;
+		text-align: center;
+		color: rgb(var(--gray));
+		font-family: var(--mono);
+		font-size: 0.78em;
+		letter-spacing: 0.02em;
+		border-top: 1px solid var(--border);
+	}
+	.footer-inner {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.6em;
+	}
+	.eof {
+		color: rgb(var(--gray));
+		opacity: 0.55;
+	}
+	.dot {
+		color: rgba(var(--gray), 0.4);
+	}
+	footer a {
+		color: rgb(var(--gray));
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	footer a:hover {
+		color: rgb(var(--text));
+	}
+</style>
