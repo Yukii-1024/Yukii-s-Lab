@@ -17,4 +17,4 @@ tags: ['随笔']                 # 标签，可写多个，不影响分区
 
 
 ## 放一个Yuc在这里
-<center><img src="20260731/yuki4.jpg"></center>
+<center><img src="/20260731/yuki4.jpg"></center>
